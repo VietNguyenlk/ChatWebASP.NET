@@ -1,5 +1,7 @@
 using ChatWeb.Data;
 using ChatWeb.Models;
+using ChatWeb.Repository;
+using ChatWeb.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore; // Add this using directive
 
@@ -14,13 +16,16 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 ;
-//builder.Services.ConfigureApplicationCookie(options =>
-//{
-//    options.LoginPath = "/Account/Login"; 
-//    options.AccessDeniedPath = "/Account/AccessDenied"; 
-//});
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+    options.SlidingExpiration = true;
+});
 
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllersWithViews();
 
