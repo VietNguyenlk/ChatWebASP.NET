@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChatWeb.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Member,Admin")]
+    // [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

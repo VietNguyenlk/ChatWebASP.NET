@@ -1,4 +1,5 @@
 using ChatWeb.Data;
+using ChatWeb.Midleware;
 using ChatWeb.Models;
 using ChatWeb.Repository;
 using ChatWeb.Service;
@@ -31,6 +32,14 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+//    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+//    await SeedRoles.InitializeAsync(roleManager, userManager);
+//}
+
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -50,5 +59,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
+
 
 app.Run();

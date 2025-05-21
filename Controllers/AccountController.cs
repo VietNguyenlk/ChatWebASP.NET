@@ -8,7 +8,7 @@ namespace ChatWeb.Controllers
 {
     public class AccountController : Controller
     {
-       private readonly IUserService _userService;
+        private readonly IUserService _userService;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
         public AccountController(IUserService userService, SignInManager<ApplicationUser> signInManager)
@@ -23,7 +23,7 @@ namespace ChatWeb.Controllers
             var user = await _userService.ValidateUserAsync(loginViewModel);
            if(user!= null)
             {
-                return RedirectToAction("Index", "Chat");
+                return RedirectToAction("Index", "Home");
             }
             ModelState.AddModelError("", "Login failed");
             return View(loginViewModel);
@@ -40,7 +40,7 @@ namespace ChatWeb.Controllers
         {
             var result = await _userService.RegisterUserAsync(registerViewModel);
             if (result)
-                return RedirectToAction("Login");
+               return RedirectToAction("Index", "Home");
 
             ModelState.AddModelError("", "Registration failed");
             return View(registerViewModel);
