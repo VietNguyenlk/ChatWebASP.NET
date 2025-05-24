@@ -10,6 +10,7 @@ namespace ChatWeb.Data
             : base(options)
         {
         }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
  
     }
    

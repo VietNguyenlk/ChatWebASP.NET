@@ -23,7 +23,9 @@ namespace ChatWeb.Controllers
             var user = await _userService.ValidateUserAsync(loginViewModel);
            if(user!= null)
             {
-                return RedirectToAction("Index", "Home");
+                Console.WriteLine("User is" + User?.Identity?.Name);
+                Console.WriteLine("User IsAuthenticated is " + User?.Identity?.IsAuthenticated);
+                return RedirectToAction("Home","Chat" );
             }
             ModelState.AddModelError("", "Login failed");
             return View(loginViewModel);
@@ -38,9 +40,16 @@ namespace ChatWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
         {
-            var result = await _userService.RegisterUserAsync(registerViewModel);
-            if (result)
-               return RedirectToAction("Index", "Home");
+            if (ModelState.IsValid) {
+                var result = await _userService.RegisterUserAsync(registerViewModel);
+                if (result)
+                {
+                    Console.WriteLine("User sign up is " + User?.Identity?.Name);
+                    Console.WriteLine("User IsAuthenticated is " + User?.Identity?.IsAuthenticated);
+                    return RedirectToAction("Index", "Home");
+                }
+               
+            }
 
             ModelState.AddModelError("", "Registration failed");
             return View(registerViewModel);

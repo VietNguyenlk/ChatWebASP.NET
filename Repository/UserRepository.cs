@@ -2,6 +2,7 @@
 using ChatWeb.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ChatWeb.Repository
 {
@@ -20,6 +21,7 @@ namespace ChatWeb.Repository
          var result =   await _userManager.CreateAsync(user, password);
             if (result.Succeeded) {
                 await _userManager.AddToRoleAsync(user, "Member");
+                // xac thuc
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
         }

@@ -34,9 +34,9 @@ namespace ChatWeb.Service
             {
                 return null;
             }
-
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-            return result.Succeeded ? user : null;
+           var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+           return result.Succeeded ? user : null;
+        
         }
     }
 
