@@ -22,10 +22,11 @@
 <div class="border rounded p-3 mb-3" style="height: 300px; overflow-y:auto">
     @foreach(var msg in Model)
     {
-        <div class="mb-2">
+        <div class="mb-2 d-flex @(msg.SenderId == currentUser.Id? "justify-content-end":"justify-content-start")">
             <strong class="@(msg.SenderId == currentUser.Id? "text-primary": "text-success")">
-                @msg.SenderUserName
+                @msg.Content
             </strong>
+            <span>@msg.Timestamp</span>
 
         </div>
     }

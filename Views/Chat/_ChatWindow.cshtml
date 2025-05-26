@@ -1,0 +1,19 @@
+﻿@model List<ChatWeb.Models.ChatMessage>
+
+<h4 class="mt-3">Khung chat</h4>
+<div class="border rounded p-3 mb-3" style="height: 400px; overflow-y: auto;">
+    @foreach (var msg in Model)
+    {
+        <div>
+            <strong>@msg.SenderUserName:</strong> @msg.Content
+        </div>
+    }
+</div>
+
+<form asp-action="SendMessage" method="post">
+    <input type="hidden" name="receiverId" value="@ViewBag.ReceiverId" />
+    <div class="input-group">
+        <input type="text" name="message" class="form-control" placeholder="Nhập tin nhắn..." />
+        <button class="btn btn-primary" type="submit">Gửi</button>
+    </div>
+</form>
