@@ -1,9 +1,11 @@
 using ChatWeb.Data;
+using ChatWeb.Hubs;
 using ChatWeb.Midleware;
 using ChatWeb.Models;
 using ChatWeb.Repository;
 using ChatWeb.Service;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore; // Add this using directive
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +29,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 
 builder.Services.AddControllersWithViews();
 
@@ -60,5 +64,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
-
+app.MapHub<ChatHub>("/chathub");
 app.Run();

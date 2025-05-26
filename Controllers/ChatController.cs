@@ -43,22 +43,22 @@ namespace ChatWeb.Controllers
             });
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SendMessage(string receiverId, string message)
-        {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var newMsg = new ChatMessage
-            {
-                SenderId = currentUser.Id,
-                ReceiverId = receiverId,
-                SenderUserName = currentUser.UserName,
-                Content = message,
-                Timestamp = DateTime.Now
-            };
-            _context.ChatMessages.Add(newMsg);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Home", new { userId = receiverId });
-        }
+    //    [HttpPost]
+    //    public async Task<IActionResult> SendMessage(string receiverId, string message)
+    //    {
+    //        var currentUser = await _userManager.GetUserAsync(User);
+    //        var newMsg = new ChatMessage
+    //        {
+    //            SenderId = currentUser.Id,
+    //            ReceiverId = receiverId,
+    //            SenderUserName = currentUser.UserName,
+    //            Content = message,
+    //            Timestamp = DateTime.Now
+    //        };
+    //        _context.ChatMessages.Add(newMsg);
+    //        await _context.SaveChangesAsync();
+    //        return RedirectToAction("Home", new { userId = receiverId });
+    //    }
     }
 
 }
