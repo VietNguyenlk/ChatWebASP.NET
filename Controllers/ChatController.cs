@@ -19,22 +19,33 @@ namespace ChatWeb.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Home(string userId)
+        public async Task<IActionResult> Home(string? userId = null)
         {
             var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
             var users = _userManager.Users.Where(u => u.Id != currentUser.Id).ToList();
-
             var messages = new List<ChatMessage>();
+            ApplicationUser? selectedUser = null; // Change to nullable type
+
             if (!string.IsNullOrEmpty(userId))
             {
-                messages = _context.ChatMessages
-                    .Where(m => (m.SenderId == currentUser.Id && m.ReceiverId == userId) ||
-                                (m.SenderId == userId && m.ReceiverId == currentUser.Id))
-                    .OrderBy(m => m.Timestamp)
-                    .ToList();
+                selectedUser = await _userManager.FindByIdAsync(userId);
+                if (selectedUser != null) // Add null check
+                {
+                    messages = _context.ChatMessages
+                        .Where(m => (m.SenderId == currentUser.Id && m.ReceiverId == userId) ||
+                                    (m.SenderId == userId && m.ReceiverId == currentUser.Id))
+                        .OrderBy(m => m.Timestamp)
+                        .ToList();
+                }
             }
 
             ViewBag.ReceiverId = userId;
+            ViewBag.SelectedUser = selectedUser;
+            ViewBag.HasSelectedUser = !string.IsNullOrEmpty(userId) && selectedUser != null; // Update condition
 
             return View(new ChatViewModel
             {
@@ -42,23 +53,5 @@ namespace ChatWeb.Controllers
                 Messages = messages
             });
         }
-
-    //    [HttpPost]
-    //    public async Task<IActionResult> SendMessage(string receiverId, string message)
-    //    {
-    //        var currentUser = await _userManager.GetUserAsync(User);
-    //        var newMsg = new ChatMessage
-    //        {
-    //            SenderId = currentUser.Id,
-    //            ReceiverId = receiverId,
-    //            SenderUserName = currentUser.UserName,
-    //            Content = message,
-    //            Timestamp = DateTime.Now
-    //        };
-    //        _context.ChatMessages.Add(newMsg);
-    //        await _context.SaveChangesAsync();
-    //        return RedirectToAction("Home", new { userId = receiverId });
-    //    }
     }
-
 }

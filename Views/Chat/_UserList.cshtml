@@ -1,11 +1,181 @@
 ﻿@model List<ChatWeb.Models.ApplicationUser>
 
-<h5 class="mt-3">Danh sách người dùng</h5>
-<ul class="list-group">
-    @foreach (var user in Model)
+<div class="user-list">
+    <div class="search-box mb-3">
+        <input type="text" class="form-control" id="userSearch" placeholder="Tìm kiếm người dùng...">
+    </div>
+
+    <ul class="list-group list-unstyled">
+        @foreach (var user in Model)
+        {
+            <li class="list-group-item user-item mb-2 @(ViewBag.ReceiverId == user.Id ? "active" : "")"
+                data-user-id="@user.Id" data-username="@user.UserName">
+                @* <a href="@Url.Action("Home", "Chat", new { userId = user.Id })" *@
+                <a asp-controller="Chat" asp-action="Home" asp-route-userId="@user.Id"
+                   class="text-decoration-none d-flex align-items-center p-2">
+                    <div class="user-avatar me-3">
+                        <div class="avatar-circle">
+                            @user.UserName?.Substring(0, 1).ToUpper()
+                        </div>
+                        <span class="online-status"></span>
+                    </div>
+                    <div class="user-info flex-grow-1">
+                        <div class="username fw-semibold">@user.UserName</div>
+                        <div class="user-status text-muted small">Online</div>
+                    </div>
+                    <div class="chat-indicator">
+                        <i class="fas fa-chevron-right text-muted"></i>
+                    </div>
+                </a>
+            </li>
+        }
+    </ul>
+
+    @if (!Model.Any())
     {
-        <li class="list-group-item">
-            <a asp-action="Home" asp-route-userId="@user.Id">@user.UserName</a>
-        </li>
+        <div class="text-center text-muted mt-4">
+            <i class="fas fa-users fa-2x mb-2"></i>
+            <p>Không có người dùng nào khác</p>
+        </div>
     }
-</ul>
+</div>
+
+<style>
+    .user-list {
+        height: calc(100vh - 120px);
+        overflow-y: auto;
+    }
+
+    .user-item {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+        .user-item:hover {
+            background-color: #f8f9fa;
+            border-color: #007bff;
+            transform: translateX(5px);
+        }
+
+        .user-item.active {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+            .user-item.active a {
+                color: white !important;
+            }
+
+            .user-item.active .text-muted {
+                color: rgba(255, 255, 255, 0.8) !important;
+            }
+
+    .user-avatar {
+        position: relative;
+    }
+
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .online-status {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 12px;
+        height: 12px;
+        background-color: #28a745;
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+
+    .username {
+        font-size: 1rem;
+        margin-bottom: 2px;
+    }
+
+    .user-status {
+        font-size: 0.85rem;
+    }
+
+    .chat-indicator {
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .user-item:hover .chat-indicator {
+        opacity: 1;
+    }
+
+    .search-box input {
+        border-radius: 20px;
+        border: 1px solid #e9ecef;
+        padding: 8px 16px;
+    }
+
+        .search-box input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+    /* Custom scrollbar */
+    .user-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .user-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .user-list::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+        .user-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('userSearch');
+        const userItems = document.querySelectorAll('.user-item');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            userItems.forEach(function(item) {
+                const username = item.dataset.username.toLowerCase();
+                if (username.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+
+        // Add click effect
+        userItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                userItems.forEach(function(otherItem) {
+                    otherItem.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    });
+</script>

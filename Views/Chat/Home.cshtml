@@ -1,5 +1,7 @@
-﻿@model ChatWeb.ViewModel.ChatViewModel  
+﻿
+ @model ChatWeb.ViewModel.ChatViewModel
 @{
+    ViewData["Title"] = "Chat Application";
     Layout = "~/Views/Shared/ChatLayout.cshtml";
 }
 
@@ -7,4 +9,83 @@
     <partial name="_UserList" model="Model.Users" />
 }
 
-<partial name="_ChatWindow" model="Model.Messages" />
+@if (ViewBag.HasSelectedUser == true)
+{
+    <!-- Hiển thị khung chat khi đã chọn user -->
+    <div class="chat-header mb-3">
+        <h5>Chat với @ViewBag.SelectedUser?.UserName</h5>
+    </div>
+
+    <partial name="_ChatWindow" model="Model.Messages" />
+}
+else
+{
+    <!-- Hiển thị phần giới thiệu khi chưa chọn user -->
+    <div class="welcome-section text-center mt-5">
+        <div class="mb-4">
+            <i class="fas fa-comments fa-5x text-muted mb-3"></i>
+        </div>
+        <h2 class="mb-3">Chào mừng đến với Chat Application</h2>
+        <p class="lead text-muted mb-4">
+            Kết nối và trò chuyện với bạn bè một cách dễ dàng
+        </p>
+        <div class="features-list">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="feature-item p-3">
+                        <i class="fas fa-bolt fa-2x text-primary mb-2"></i>
+                        <h5>Nhanh chóng</h5>
+                        <p class="text-muted">Tin nhắn được gửi và nhận tức thì</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="feature-item p-3">
+                        <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                        <h5>Bảo mật</h5>
+                        <p class="text-muted">Thông tin được bảo vệ an toàn</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="feature-item p-3">
+                        <i class="fas fa-users fa-2x text-info mb-2"></i>
+                        <h5>Kết nối</h5>
+                        <p class="text-muted">Trò chuyện với nhiều người bạn</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <p class="text-muted">
+                <i class="fas fa-arrow-left me-2"></i>
+                Chọn một người dùng từ danh sách bên trái để bắt đầu trò chuyện
+            </p>
+        </div>
+    </div>
+}
+
+<style>
+    .welcome-section {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .feature-item {
+        border-radius: 10px;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .feature-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .chat-header {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 1rem;
+    }
+
+    .vh-100 {
+        height: 100vh !important;
+    }
+</style>

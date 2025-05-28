@@ -344,7 +344,8 @@
 
 <input type="hidden" id="receiverId" value="@ViewBag.ReceiverId" />
 <input type="hidden" id="senderId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
-
+@* t muốn lấy ussername *@
+<input type="hidden" id="senderUserName" value="@User?.Identity?.Name" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
     const connection = new signalR.HubConnectionBuilder()
@@ -361,9 +362,9 @@
             console.error("SignalR Connection Error:", err);
         });
 
-    connection.on("ReceiveMessage", function (senderId, message) {
-        console.log("Received message:", senderId, message);
-        addMessage(senderId, message, 'received');
+    connection.on("ReceiveMessage", function (senderId, message,senderUserName) {
+        console.log("Received message:", senderId, message,senderUserName);
+        addMessage(senderUserName,message, 'received');
     });
 
     connection.onclose(function (error) {
@@ -378,7 +379,7 @@
         console.log("SignalR reconnected:", connectionId);
     });
 
-    function addMessage(sender, message, type) {
+    function addMessage(senderUserName, message, type) {
         const msgBox = document.getElementById("chatBox");
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
@@ -386,12 +387,13 @@
         const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
         messageDiv.innerHTML = `
-            <div class="message-sender">${type === 'sent' ? 'You' : sender}</div>
+            <div class="message-sender">${type === 'sent' ? 'You' : senderUserName}</div>
             <div class="message-bubble">
                 ${message}
                 <div class="message-time">${currentTime}</div>
             </div>
         `;
+        console.log("message sss",message);
 
         // Remove empty state if exists
         const emptyState = msgBox.querySelector('.empty-state');
@@ -407,8 +409,9 @@
         const senderId = document.getElementById("senderId").value;
         const receiverId = document.getElementById("receiverId").value;
         const message = document.getElementById("messageInput").value;
+        const senderUserName = document.getElementById("senderUserName").value;
 
-        console.log("Sending - Sender:", senderId, "Receiver:", receiverId, "Message:", message);
+        console.log("Sending - Sender:", senderId, "Receiver:", receiverId, "Message:", message," senderUserName",senderUserName);
 
         if (!message.trim()) {
             console.log("Empty message, not sending");
@@ -416,7 +419,7 @@
         }
 
         try {
-            await connection.invoke("SendMessage", senderId, receiverId, message);
+            await connection.invoke("SendMessage", senderId, receiverId, message,senderUserName);
             console.log("Message sent successfully");
 
             // Add message to chat immediately for sender
