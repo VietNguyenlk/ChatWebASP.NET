@@ -12,9 +12,9 @@
 @if (ViewBag.HasSelectedUser == true)
 {
     <!-- Hiển thị khung chat khi đã chọn user -->
-    <div class="chat-header mb-3">
-        <h5>Chat với @ViewBag.SelectedUser?.UserName</h5>
-    </div>
+    @* <div class="chat-header mb-3"> *@
+    @*     <h5>Chat với @ViewBag.SelectedUser?.UserName</h5> *@
+    @* </div> *@
 
     <partial name="_ChatWindow" model="Model.Messages" />
 }

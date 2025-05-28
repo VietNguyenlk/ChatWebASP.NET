@@ -8,7 +8,8 @@ namespace ChatWeb.Hubs
     public class ChatHub : Hub
     {
         private readonly ApplicationDbContext _context;
-        public ChatHub(ApplicationDbContext applicationDbContext) {
+        public ChatHub(ApplicationDbContext applicationDbContext)
+        {
             _context = applicationDbContext;
         }
         public async Task SendMessage(string senderId, string receiverId, string message, string SenderUserName)
@@ -28,7 +29,7 @@ namespace ChatWeb.Hubs
                 Timestamp = DateTime.Now,
 
             };
-            _context.ChatMessages.Add( newMessage );
+            _context.ChatMessages.Add(newMessage);
             await _context.SaveChangesAsync();
             // Thử cả 2 cách gửi
             // Cách 1: Gửi cho user cụ thể
@@ -44,5 +45,30 @@ namespace ChatWeb.Hubs
             Console.WriteLine($"User connected: {userId}");
             await base.OnConnectedAsync();
         }
+
+        public async Task InitiateCall(string receiverId, string callerName, string callType)
+        {
+            await Clients.User(receiverId).SendAsync("IncomingCall", Context.UserIdentifier, callerName, callType);
+        }
+
+        public async Task AcceptCall(string callerId)
+        {
+            await Clients.User(callerId).SendAsync("CallAccepted", Context.UserIdentifier);
+        }
+
+        public async Task DeclineCall(string callerId)
+        {
+            await Clients.User(callerId).SendAsync("CallDeclined", Context.UserIdentifier);
+        }
+
+        public async Task RecallMessage(string messageId)
+        {
+            // Logic để xóa/đánh dấu tin nhắn trong database
+            // Sau đó thông báo cho tất cả clients trong cuộc trò chuyện
+            await Clients.All.SendAsync("MessageRecalled", messageId);
+        }
+
+
+
     }
-}
+    }
