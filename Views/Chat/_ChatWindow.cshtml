@@ -1,322 +1,41 @@
 ﻿@model List<ChatWeb.Models.ChatMessage>
 
-<style>
-    .chat-container {
-    max-width: 800px;
-    margin: 20px auto;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 20px;
-    padding: 2px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    }
-
-    .chat-inner {
-    background: white;
-    border-radius: 18px;
-    overflow: hidden;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    }
-
-    .chat-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 1.2em;
-    position: relative;
-    }
-
-    .chat-header::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 20px;
-    transform: translateY(-50%);
-    width: 12px;
-    height: 12px;
-    background: #4ade80;
-    border-radius: 50%;
-    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.3);
-    animation: pulse-animation 2s infinite;
-    }
-
-    .chat-box {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
-    position: relative;
-    }
-
-    .chat-box::-webkit-scrollbar {
-    width: 6px;
-    }
-
-    .chat-box::-webkit-scrollbar-track {
-    background: transparent;
-    }
-
-    .chat-box::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 10px;
-    }
-
-    .message {
-    margin-bottom: 16px;
-    animation: fade-in-up 0.4s ease-out;
-    }
-
-    .message.sent {
-    text-align: right;
-    }
-
-    .message.received {
-    text-align: left;
-    }
-
-    .message-bubble {
-    display: inline-block;
-    max-width: 70%;
-    padding: 12px 18px;
-    border-radius: 20px;
-    font-size: 14px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    position: relative;
-    }
-
-    .message.sent .message-bubble {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-bottom-right-radius: 6px;
-    }
-
-    .message.received .message-bubble {
-    background: white;
-    color: #374151;
-    border: 1px solid #e5e7eb;
-    border-bottom-left-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .message-sender {
-    font-size: 11px;
-    color: #6b7280;
-    margin-bottom: 4px;
-    font-weight: 500;
-    }
-
-    .message.sent .message-sender {
-    text-align: right;
-    }
-
-    .message.received .message-sender {
-    text-align: left;
-    }
-
-    .message-time {
-    font-size: 10px;
-    color: rgba(255,255,255,0.7);
-    margin-top: 4px;
-    }
-
-    .message.received .message-time {
-    color: #9ca3af;
-    }
-
-    .chat-input-container {
-    padding: 20px;
-    background: white;
-    border-top: 1px solid #e5e7eb;
-    }
-
-    .chat-input-wrapper {
-    display: flex;
-    align-items: center;
-    background: #f9fafb;
-    border: 2px solid #e5e7eb;
-    border-radius: 25px;
-    padding: 8px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    }
-
-    .chat-input-wrapper:focus-within {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    background: white;
-    }
-
-    .message-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    padding: 8px 15px;
-    font-size: 14px;
-    color: #374151;
-    resize: none;
-    }
-
-    .message-input::placeholder {
-    color: #9ca3af;
-    }
-
-    .send-button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: none;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    }
-
-    .send-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-
-    .send-button:active {
-    transform: scale(0.95);
-    }
-
-    .send-icon {
-    width: 18px;
-    height: 18px;
-    fill: currentColor;
-    }
-
-    .typing-indicator {
-    display: none;
-    padding: 10px 20px;
-    color: #6b7280;
-    font-style: italic;
-    font-size: 13px;
-    }
-
-    .typing-dots {
-    display: inline-block;
-    }
-
-    .typing-dots span {
-    display: inline-block;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: #6b7280;
-    margin: 0 1px;
-    animation: typing-animation 1.4s infinite ease-in-out;
-    }
-
-    .typing-dots span:nth-child(1) {
-    animation-delay: -0.32s;
-    }
-
-    .typing-dots span:nth-child(2) {
-    animation-delay: -0.16s;
-    }
-
-    .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: #9ca3af;
-    text-align: center;
-    }
-
-    .empty-state-icon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
-    opacity: 0.5;
-    }
-
-    /* Animations */
-    /* @@keyframes pulse-animation { */
-    /*     0% { */
-    /*         box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); */
-    /*     } */
-
-    /*     70% { */
-    /*         box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); */
-    /*     } */
-
-    /*     100% { */
-    /*         box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); */
-    /*     } */
-    /* } */
-
-    /* @@keyframes fade-in-up { */
-    /*     0% { */
-    /*         opacity: 0; */
-    /*         transform: translateY(20px); */
-    /*     } */
-
-    /*     100% { */
-    /*         opacity: 1; */
-    /*         transform: translateY(0); */
-    /*     } */
-    /* } */
-
-    /* @@keyframes typing-animation { */
-    /*     0% { */
-    /*         transform: scale(0.8); */
-    /*         opacity: 0.5; */
-    /*     } */
-
-    /*     40% { */
-    /*         transform: scale(1); */
-    /*         opacity: 1; */
-    /*     } */
-
-    /*     80% { */
-    /*         transform: scale(0.8); */
-    /*         opacity: 0.5; */
-    /*     } */
-
-    /*     100% { */
-    /*         transform: scale(0.8); */
-    /*         opacity: 0.5; */
-    /*     } */
-    /* } */
-</style>
+@{
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var senderUserName = User.Identity?.Name;
+}
 
 <div class="chat-container">
     <div class="chat-inner">
         <div class="chat-header">
             💬 Chat Room
+            <h4>📞 Cuộc gọi thoại</h4>
+            <div class="voice-controls">
+                <button id="voiceCallButton">🔊 Gọi thoại</button>
+                <button id="endVoiceCallButton">❌ Kết thúc thoại</button>
+            </div>
+
+            <button class="video-call-button" id="openVideoCallModal">
+                <svg class="video-call-icon" viewBox="0 0 24 24">
+                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+                </svg>
+            </button>
         </div>
+
 
         <div id="chatBox" class="chat-box">
             @if (Model != null && Model.Any())
             {
-                @foreach (var msg in Model)
+                foreach (var msg in Model)
                 {
-                    // nguoi nhan ben phai, nguoi nhan ben trai
-                    var isSentByCurrentUser = msg.SenderUserName == @ViewBag.SelectedUser?.UserName;
-                    var messageClass = isSentByCurrentUser ? "received" : "sent" ;
+                    var isSentByCurrentUser = msg.SenderUserName == ViewBag.SelectedUser?.UserName;
+                    var messageClass = isSentByCurrentUser ? "received" : "sent";
                     <div class="message @messageClass">
-                            @* hien ten *@
-                            @* <div class="message-sender">@msg.SenderUserName</div> *@
-                            <div class="message-bubble">
-                                @msg.Content
-                                <div class="message-time">@msg.Timestamp</div>
-                            </div>
+                        <div class="message-bubble">
+                            @msg.Content
+                            <div class="message-time">@msg.Timestamp</div>
                         </div>
-                 
+                    </div>
                 }
             }
             else
@@ -347,41 +66,102 @@
     </div>
 </div>
 
+<!-- Video Call Modal -->
+<div class="modal" id="videoCallModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">📹 Video Call</div>
+            <button class="modal-close" id="closeVideoCallModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="call-status" id="callStatus">Ready to call</div>
+            <div class="video-container">
+                <div class="video-box">
+                    <video id="localVideo" autoplay playsinline muted></video>
+                </div>
+                <div class="video-box">
+                    <video id="remoteVideo" autoplay playsinline></video>
+                </div>
+            </div>
+            <div class="video-controls">
+                <button id="callButton" class="call-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"></path>
+                    </svg>
+                    Call
+                </button>
+                <button id="endCallButton" class="call-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.68 13.31a16 16 0 003.41 2.6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7 2 2 0 011.72 2v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.42 19.42 0 01-3.33-2.67m-2.67-3.34a19.79 19.79 0 01-3.07-8.63A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91"></path>
+                        <line x1="23" y1="1" x2="1" y2="23"></line>
+                    </svg>
+                    End Call
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <input type="hidden" id="receiverId" value="@ViewBag.ReceiverId" />
-<input type="hidden" id="senderId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
-@* t muốn lấy ussername *@
-<input type="hidden" id="senderUserName" value="@User?.Identity?.Name" />
+<input type="hidden" id="senderId" value="@currentUserId" />
+<input type="hidden" id="senderUserName" value="@senderUserName" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
+    let iceCandidateBuffer = [];
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chathub")
         .configureLogging(signalR.LogLevel.Information)
         .build();
 
-    connection.start()
-        .then(() => {
-            console.log("Connected to SignalR");
-            console.log("Connection ID:", connection.connectionId);
-        })
-        .catch(err => {
-            console.error("SignalR Connection Error:", err);
-        });
+    const senderId = document.getElementById("senderId").value;
+    const receiverId = document.getElementById("receiverId").value;
+    const senderUserName = document.getElementById("senderUserName").value;
 
-    connection.on("ReceiveMessage", function (senderId, message,senderUserName) {
-        console.log("Received message:", senderId, message,senderUserName);
-        addMessage(senderUserName,message, 'received');
+    // Modal elements
+    const videoCallModal = document.getElementById("videoCallModal");
+    const openVideoCallModalBtn = document.getElementById("openVideoCallModal");
+    const closeVideoCallModalBtn = document.getElementById("closeVideoCallModal");
+    const callStatus = document.getElementById("callStatus");
+
+    // Video elements
+    const localVideo = document.getElementById("localVideo");
+    const remoteVideo = document.getElementById("remoteVideo");
+    const callButton = document.getElementById("callButton");
+    const endCallButton = document.getElementById("endCallButton");
+
+    let localStream;
+    let peerConnection;
+    const config = {
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+    };
+
+    // Modal control
+    openVideoCallModalBtn.addEventListener("click", () => {
+        videoCallModal.style.display = "flex";
     });
 
-    connection.onclose(function (error) {
-        console.error("SignalR connection closed:", error);
+    closeVideoCallModalBtn.addEventListener("click", () => {
+        videoCallModal.style.display = "none";
+        endCall();
     });
 
-    connection.onreconnecting(function (error) {
-        console.log("SignalR reconnecting:", error);
+    window.addEventListener("click", (event) => {
+        if (event.target === videoCallModal) {
+            videoCallModal.style.display = "none";
+            endCall();
+        }
+    });
+        // Cleanup khi đóng trang
+    window.addEventListener('beforeunload', () => {
+        if (isVoiceCallActive) {
+            endVoiceCall();
+        }
     });
 
-    connection.onreconnected(function (connectionId) {
-        console.log("SignalR reconnected:", connectionId);
+    // ========= Chat =========
+    connection.on("ReceiveMessage", function (senderId, message, senderUserName) {
+        addMessage(senderUserName, message, 'received');
     });
 
     function addMessage(senderUserName, message, type) {
@@ -389,72 +169,403 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
 
-        const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         messageDiv.innerHTML = `
-           @* hien ten*@
-           @* <div class="message-sender">${type === 'sent' ? 'You' : senderUserName}</div>*@
-          
             <div class="message-bubble">
                 ${message}
                 <div class="message-time">${currentTime}</div>
             </div>
         `;
-        console.log("message sss",message);
 
-        // Remove empty state if exists
         const emptyState = msgBox.querySelector('.empty-state');
-        if (emptyState) {
-            emptyState.remove();
-        }
+        if (emptyState) emptyState.remove();
 
         msgBox.appendChild(messageDiv);
         msgBox.scrollTop = msgBox.scrollHeight;
     }
 
     async function sendMessage() {
-        const senderId = document.getElementById("senderId").value;
-        const receiverId = document.getElementById("receiverId").value;
         const message = document.getElementById("messageInput").value;
-        const senderUserName = document.getElementById("senderUserName").value;
-
-        console.log("Sending - Sender:", senderId, "Receiver:", receiverId, "Message:", message," senderUserName",senderUserName);
-
-        if (!message.trim()) {
-            console.log("Empty message, not sending");
-            return;
-        }
+        if (!message.trim()) return;
 
         try {
-            await connection.invoke("SendMessage", senderId, receiverId, message,senderUserName);
-            console.log("Message sent successfully");
-
-            // Add message to chat immediately for sender
-            addMessage('You', message, 'sent');
-
+            await connection.invoke("SendMessage", senderId, receiverId, message, senderUserName);
+            addMessage("You", message, 'sent');
             document.getElementById("messageInput").value = "";
         } catch (err) {
-            console.error("Error sending message:", err);
+            console.error("Send error:", err);
         }
     }
 
-    // Send message on Enter key press
-    document.getElementById("messageInput").addEventListener("keypress", function(event) {
+    document.getElementById("messageInput").addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             event.preventDefault();
             sendMessage();
         }
     });
 
-    // Auto-resize input
-    const messageInput = document.getElementById("messageInput");
-    let typingTimer;
+    // ========= Video Call =========
+        connection.on("ReceiveSignal", async (senderId, signal) => {
+        const data = JSON.parse(signal);
 
-    messageInput.addEventListener("input", function() {
-        clearTimeout(typingTimer);
+        // Xác định connection nào đang được sử dụng
+        const activeConnection = voiceConnection || peerConnection;
 
-        // Auto resize
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        if (!activeConnection) {
+            // Tạo connection tùy theo loại cuộc gọi
+            if (isVoiceCallActive || (!peerConnection && !videoCallModal.style.display)) {
+                await createVoiceConnection(senderId);
+            } else {
+                await createPeerConnection(senderId);
+            }
+        }
+
+        try {
+            const currentConnection = voiceConnection || peerConnection;
+
+            if (data.type === "offer") {
+                await currentConnection.setRemoteDescription(new RTCSessionDescription(data));
+                const answer = await currentConnection.createAnswer();
+                await currentConnection.setLocalDescription(answer);
+                await connection.invoke("SendSignal", senderId, JSON.stringify(answer));
+
+                if (voiceConnection) {
+                    updateVoiceCallUI(true);
+                } else {
+                    callStatus.textContent = "Call connected";
+                }
+            } else if (data.type === "answer") {
+                await currentConnection.setRemoteDescription(new RTCSessionDescription(data));
+
+                if (voiceConnection) {
+                    updateVoiceCallUI(true);
+                } else {
+                    callStatus.textContent = "Call connected";
+                }
+            } else if (data.candidate) {
+                if (currentConnection.remoteDescription) {
+                    await currentConnection.addIceCandidate(new RTCIceCandidate(data));
+                } else {
+                    console.log("Buffering ICE candidate until remote description is set");
+                }
+            }
+        } catch (error) {
+            console.error("Error processing signal:", error);
+            if (voiceConnection) {
+                endVoiceCall();
+            } else {
+                endCall();
+            }
+        }
     });
+
+    connection.on("CallAccepted", async (accepterId) => {
+        console.log("Call accepted by:", accepterId);
+        if (voiceConnection) {
+            updateVoiceCallUI(true);
+        } else {
+            callStatus.textContent = "Call connected";
+        }
+    });
+
+
+    connection.on("CallDeclined", (declinerId) => {
+        if (voiceConnection) {
+            voiceCallButton.textContent = "❌ Cuộc gọi bị từ chối";
+            setTimeout(() => {
+                voiceCallButton.textContent = "🔊 Gọi thoại";
+                voiceCallButton.disabled = false;
+            }, 2000);
+            endVoiceCall();
+        } else {
+            callStatus.textContent = "Call declined";
+            setTimeout(() => {
+                callStatus.textContent = "Ready to call";
+            }, 2000);
+            endCall();
+        }
+    });
+
+
+    connection.on("CallEnded", () => {
+        if (voiceConnection) {
+            endVoiceCall();
+        } else {
+            callStatus.textContent = "Call ended";
+            setTimeout(() => {
+                callStatus.textContent = "Ready to call";
+            }, 2000);
+            endCall();
+        }
+    });
+
+       connection.on("IncomingCall", async (callerId, callerName, callType) => {
+        if (callType === "voice") {
+            const accepted = confirm(`📞 ${callerName} đang gọi thoại cho bạn. Nhận cuộc gọi?`);
+
+            if (accepted) {
+                try {
+                    await createVoiceConnection(callerId);
+                    await connection.invoke("AcceptCall", callerId);
+                    updateVoiceCallUI(true);
+                } catch (error) {
+                    console.error("Error accepting voice call:", error);
+                    alert("Không thể nhận cuộc gọi");
+                    endVoiceCall();
+                }
+            } else {
+                await connection.invoke("DeclineCall", callerId);
+            }
+        } else {
+            // Video call logic (giữ nguyên code cũ)
+            videoCallModal.style.display = "flex";
+            callStatus.textContent = `Incoming call from ${callerName}...`;
+
+            if (confirm(`📞 ${callerName} đang gọi bạn (${callType}) — Nhận cuộc gọi?`)) {
+                try {
+                    await createPeerConnection(callerId);
+                    await connection.invoke("AcceptCall", callerId);
+                    callStatus.textContent = "Call connected";
+                } catch (error) {
+                    console.error("Error accepting call:", error);
+                    callStatus.textContent = "Failed to connect";
+                    endCall();
+                }
+            } else {
+                await connection.invoke("DeclineCall", callerId);
+                callStatus.textContent = "Call declined";
+                videoCallModal.style.display = "none";
+            }
+        }
+    });
+
+
+    callButton.onclick = async () => {
+        try {
+            callStatus.textContent = "Calling...";
+            await createPeerConnection(receiverId);
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            await connection.invoke("SendSignal", receiverId, JSON.stringify(offer));
+            await connection.invoke("InitiateCall", receiverId, senderUserName, "video");
+            callStatus.textContent = "Waiting for answer...";
+        } catch (error) {
+            console.error("Error initiating call:", error);
+            callStatus.textContent = "Failed to call";
+            endCall();
+        }
+    };
+
+    endCallButton.onclick = async () => {
+        callStatus.textContent = "Ending call...";
+        endCall();
+        await connection.invoke("EndCall", receiverId);
+        callStatus.textContent = "Ready to call";
+    };
+
+    async function createPeerConnection(otherUserId) {
+        try {
+            peerConnection = new RTCPeerConnection(config);
+
+               peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            connection.invoke("SendSignal", otherUserId, JSON.stringify({
+                candidate: event.candidate.candidate,
+                sdpMid: event.candidate.sdpMid,
+                sdpMLineIndex: event.candidate.sdpMLineIndex
+            }));
+        }
+    };
+
+            peerConnection.ontrack = (event) => {
+                console.log("Received remote stream");
+                remoteVideo.srcObject = event.streams[0];
+            };
+
+            peerConnection.onconnectionstatechange = () => {
+                console.log("Connection state:", peerConnection.connectionState);
+                if (peerConnection.connectionState === 'failed') {
+                    console.error("Connection failed");
+                    callStatus.textContent = "Connection failed";
+                    endCall();
+                }
+            };
+
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            });
+
+            localVideo.srcObject = localStream;
+
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+
+            console.log("PeerConnection created successfully");
+
+        } catch (error) {
+            console.error("Error creating peer connection:", error);
+            callStatus.textContent = "Failed to access camera/microphone";
+            throw error;
+        }
+    }
+
+    function endCall() {
+        if (peerConnection) {
+            peerConnection.close();
+            peerConnection = null;
+        }
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        localVideo.srcObject = null;
+        remoteVideo.srcObject = null;
+        console.log("Call ended and resources cleaned up");
+    }
+    /// call voice
+        // Voice call variables
+    let voiceConnection;
+    let localAudioStream;
+    let isVoiceCallActive = false;
+
+    // Voice call buttons
+    const voiceCallButton = document.getElementById("voiceCallButton");
+    const endVoiceCallButton = document.getElementById("endVoiceCallButton");
+
+    // Voice call button events
+    voiceCallButton.addEventListener("click", initiateVoiceCall);
+    endVoiceCallButton.addEventListener("click", endVoiceCall);
+
+    // Initially hide end call button
+    endVoiceCallButton.style.display = "none";
+
+    // ========= Voice Call Functions =========
+
+    async function initiateVoiceCall() {
+        try {
+            voiceCallButton.textContent = "🔄 Đang gọi...";
+            voiceCallButton.disabled = true;
+
+            await createVoiceConnection(receiverId);
+            const offer = await voiceConnection.createOffer();
+            await voiceConnection.setLocalDescription(offer);
+
+            await connection.invoke("SendSignal", receiverId, JSON.stringify(offer));
+            await connection.invoke("InitiateCall", receiverId, senderUserName, "voice");
+
+            voiceCallButton.textContent = "⏳ Chờ phản hồi...";
+
+        } catch (error) {
+            console.error("Error initiating voice call:", error);
+            voiceCallButton.textContent = "🔊 Gọi thoại";
+            voiceCallButton.disabled = false;
+            alert("Không thể bắt đầu cuộc gọi. Vui lòng kiểm tra microphone.");
+        }
+    }
+
+    async function createVoiceConnection(otherUserId) {
+        try {
+            voiceConnection = new RTCPeerConnection(config);
+
+            voiceConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    connection.invoke("SendSignal", otherUserId, JSON.stringify({
+                        candidate: event.candidate.candidate,
+                        sdpMid: event.candidate.sdpMid,
+                        sdpMLineIndex: event.candidate.sdpMLineIndex
+                    }));
+                }
+            };
+
+            voiceConnection.ontrack = (event) => {
+                console.log("Received remote audio stream");
+                const remoteAudio = new Audio();
+                remoteAudio.srcObject = event.streams[0];
+                remoteAudio.play();
+            };
+
+            voiceConnection.onconnectionstatechange = () => {
+                console.log("Voice connection state:", voiceConnection.connectionState);
+                if (voiceConnection.connectionState === 'connected') {
+                    isVoiceCallActive = true;
+                    updateVoiceCallUI(true);
+                } else if (voiceConnection.connectionState === 'failed') {
+                    console.error("Voice connection failed");
+                    endVoiceCall();
+                }
+            };
+
+            // Chỉ lấy audio stream cho voice call
+            localAudioStream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: false
+            });
+
+            localAudioStream.getTracks().forEach(track => {
+                voiceConnection.addTrack(track, localAudioStream);
+            });
+
+            console.log("Voice connection created successfully");
+
+        } catch (error) {
+            console.error("Error creating voice connection:", error);
+            throw error;
+        }
+    }
+
+    function endVoiceCall() {
+        if (voiceConnection) {
+            voiceConnection.close();
+            voiceConnection = null;
+        }
+
+        if (localAudioStream) {
+            localAudioStream.getTracks().forEach(track => track.stop());
+            localAudioStream = null;
+        }
+
+        isVoiceCallActive = false;
+        updateVoiceCallUI(false);
+
+        // Thông báo cho người khác
+        if (receiverId) {
+            connection.invoke("EndCall", receiverId);
+        }
+
+        console.log("Voice call ended and resources cleaned up");
+    }
+
+    function updateVoiceCallUI(isActive) {
+        if (isActive) {
+            voiceCallButton.style.display = "none";
+            endVoiceCallButton.style.display = "inline-block";
+            endVoiceCallButton.textContent = "❌ Kết thúc thoại";
+
+            // Thêm indicator cho cuộc gọi đang hoạt động
+            const chatHeader = document.querySelector('.chat-header h4');
+            chatHeader.style.color = "#00ff00";
+            chatHeader.textContent = "📞 Đang trong cuộc gọi...";
+        } else {
+            voiceCallButton.style.display = "inline-block";
+            voiceCallButton.textContent = "🔊 Gọi thoại";
+            voiceCallButton.disabled = false;
+            endVoiceCallButton.style.display = "none";
+
+            // Reset header
+            const chatHeader = document.querySelector('.chat-header h4');
+            chatHeader.style.color = "";
+            chatHeader.textContent = "📞 Cuộc gọi thoại";
+        }
+    }
+
+
+
+
+    //////////////////////////////////////////////////////
+    connection.start()
+        .then(() => console.log("SignalR connected"))
+        .catch(err => console.error("Connection error:", err));
 </script>

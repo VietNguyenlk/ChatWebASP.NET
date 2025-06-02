@@ -46,26 +46,36 @@ namespace ChatWeb.Hubs
             await base.OnConnectedAsync();
         }
 
+
+        //////////////////
         public async Task InitiateCall(string receiverId, string callerName, string callType)
         {
-            await Clients.User(receiverId).SendAsync("IncomingCall", Context.UserIdentifier, callerName, callType);
+            var callerId = Context.UserIdentifier;
+            await Clients.User(receiverId).SendAsync("IncomingCall", callerId, callerName, callType);
         }
 
         public async Task AcceptCall(string callerId)
         {
-            await Clients.User(callerId).SendAsync("CallAccepted", Context.UserIdentifier);
+            var accepterId = Context.UserIdentifier;
+            await Clients.User(callerId).SendAsync("CallAccepted", accepterId);
         }
 
         public async Task DeclineCall(string callerId)
         {
-            await Clients.User(callerId).SendAsync("CallDeclined", Context.UserIdentifier);
+            var declinerId = Context.UserIdentifier;
+            await Clients.User(callerId).SendAsync("CallDeclined", declinerId);
         }
 
-        public async Task RecallMessage(string messageId)
+        public async Task SendSignal(string receiverId, string signalData)
         {
-            // Logic để xóa/đánh dấu tin nhắn trong database
-            // Sau đó thông báo cho tất cả clients trong cuộc trò chuyện
-            await Clients.All.SendAsync("MessageRecalled", messageId);
+            var senderId = Context.UserIdentifier;
+            await Clients.User(receiverId).SendAsync("ReceiveSignal", senderId, signalData);
+        }
+
+        public async Task EndCall(string otherUserId)
+        {
+            var userId = Context.UserIdentifier;
+            await Clients.User(otherUserId).SendAsync("CallEnded", userId);
         }
 
 
