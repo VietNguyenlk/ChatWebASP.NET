@@ -17,4 +17,13 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\js\Chat\chatManager.js" />
+    <None Include="wwwroot\js\Chat\config.js" />
+    <None Include="wwwroot\js\Chat\domElements.js" />
+    <None Include="wwwroot\js\Chat\signalHandler.js" />
+    <None Include="wwwroot\js\Chat\videoCallManager.js" />
+    <None Include="wwwroot\js\Chat\voiceCallManager.js" />
+  </ItemGroup>
+
 </Project>
